@@ -3,13 +3,13 @@
 This project seeks to implement a basic video game distribution app, being inspired by others like it such as Steam or Epic Games.
 
 The classes used are:
--User
--Player
--Developer
--Game
--Item
--Inventory
--Review
+- User
+- Player
+- Developer
+- Game
+- Item
+- Inventory
+- Review
 
 The User class contains login credentials and a few pieces of information such as the account balance. It is a parent class of Player and Developer, which are the two types of user contained by our app. Players have their game libraries, their wishlists as well reviews for the games they played and an inventory with all their special items from these games. Developers are the ones that create the games.
 
