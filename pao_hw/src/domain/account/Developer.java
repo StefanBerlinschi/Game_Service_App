@@ -1,6 +1,6 @@
-package account;
+package domain.account;
 
-import game.Game;
+import domain.game.Game;
 import java.util.ArrayList;
 
 public class Developer extends User {

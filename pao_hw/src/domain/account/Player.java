@@ -1,9 +1,10 @@
-package account;
+package domain.account;
 
-import game.Game;
-import items.Inventory;
-import items.Item;
-import review.Review;
+import domain.game.Game;
+import domain.items.Inventory;
+import domain.items.Item;
+import domain.review.Review;
+import other.Pair;
 
 import java.util.ArrayList;
 
@@ -14,8 +15,11 @@ public class Player extends User {
     private String biography;
     private Inventory inventory = new Inventory(getUsername());
 
-    public Player() {
-    }
+//    private ArrayList<String> ownedGames = new ArrayList<>();   // numele jocurilor
+//    private ArrayList<String> reviews = new ArrayList<>();      // numele playerilor care au facut review-ul
+//    private ArrayList<String> wishlist = new ArrayList<>();       // numele jocurilor
+//    private String biography;
+//    private Inventory inventory = new Inventory(getUsername());
 
     public Player(String username, String password, String nickname, String email, double accountBalance, String biography) {
         super(username, password, nickname, email, accountBalance);
@@ -47,13 +51,13 @@ public class Player extends User {
     }
 
     public void addToInventory(Item item) {
-        inventory.addItem(item);
+        Pair<String, String> p = new Pair<>(item.getGame(), item.getName());
+        inventory.addItem(p);
     }
 
     public ArrayList<Game> getOwnedGames() {
         return ownedGames;
     }
-
 
     public ArrayList<Review> getReviews() {
         return reviews;

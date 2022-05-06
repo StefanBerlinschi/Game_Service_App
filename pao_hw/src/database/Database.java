@@ -1,53 +1,94 @@
 package database;
 
-import account.Developer;
-import account.Player;
-import account.User;
-import game.Game;
-import items.Inventory;
-import items.Item;
-import items.ItemType;
-import review.Review;
+import domain.account.Developer;
+import domain.account.Player;
+import domain.account.User;
+import domain.game.Game;
+import domain.items.Item;
+import domain.items.ItemType;
+import domain.review.Review;
+import service.ReviewCSV;
+import service.UserCSV;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import static java.lang.Integer.parseInt;
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.Double.parseDouble;
 
 public class Database {
     private Scanner s = new Scanner(System.in);
-    private ArrayList<Game> games = new ArrayList<>();
-    private ArrayList<Item> items = new ArrayList<>();
+    private static ArrayList<Game> games = new ArrayList<>();
+    private static ArrayList<Item> items = new ArrayList<>();
 //    private ArrayList<Inventory> inventories = new ArrayList<>();
-    private ArrayList<User> users = new ArrayList<>();
+    private static ArrayList<User> users = new ArrayList<>();
+
+    private static ArrayList<Review> rev = new ArrayList<>();
 
     public static void main(String args[]) {
         Database database = new Database();
-        while (true) {
-            database.menu();
-            int option = database.readOption();
-            database.apply(option);
+
+        UserCSV x = UserCSV.getInstance();
+        try {
+            ArrayList<User> ls = x.load("/home/stefan/Desktop/materii_facultate/pao/pao_hw/src/service_files/User.csv");
+            for (User user: ls) {
+                users.add(user);
+            }
         }
+        catch (FileNotFoundException e) {
+            System.out.println("Users file not found");
+        }
+
+        ReviewCSV y = ReviewCSV.getInstance();
+        try {
+            ArrayList<Review> ls = y.load("/home/stefan/Desktop/materii_facultate/pao/pao_hw/src/service_files/Review.csv");
+            for (Review review: ls) {
+                rev.add(review);
+            }
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("Review file not found");
+        }
+
+        System.out.println(rev);
+
+        String player = database.s.nextLine();
+        String game = database.s.nextLine();
+        Double rating = parseDouble(database.s.nextLine());
+        Double hrs = parseDouble(database.s.nextLine());
+        String revtext = database.s.nextLine();
+        Boolean recc = parseBoolean(database.s.nextLine());
+
+        Review r = new Review(player, game, rating, hrs, revtext, recc);
+        y.add("/home/stefan/Desktop/materii_facultate/pao/pao_hw/src/service_files/Review.csv", r);
+
+
+//        while (true) {
+//            database.menu();
+//            int option = database.readOption();
+//            database.apply(option);
+//        }
     }
 
     private void menu() {
         System.out.println("---------------------------");
         System.out.println("Game service app");
         System.out.println("1. Add user");
-        System.out.println("2. Add game");
+        System.out.println("2. Add domain.game");
         System.out.println("3. Add item");
         System.out.println("4. List all users");
         System.out.println("5. List all games");
-        System.out.println("6. List all items");
+        System.out.println("6. List all domain.game.items");
         System.out.println("7. Display user's library");
         System.out.println("8. Display user's wishlist");
         System.out.println("9. Display user's reviews");
-        System.out.println("10. List all reviews for a game");
+        System.out.println("10. List all reviews for a domain.game");
         System.out.println("11. Update user wishlist");
-        System.out.println("12. Add dev as contributor to game");
-        System.out.println("13. Add game to player's library");
+        System.out.println("12. Add dev as contributor to domain.game");
+        System.out.println("13. Add domain.game to player's library");
         System.out.println("14. Add item to player's inventory");
-        System.out.println("15. Add review");
+        System.out.println("15. Add domain.review");
         System.out.println("16. Exit");
         System.out.print("Option:");
     }
@@ -110,6 +151,7 @@ public class Database {
                 addReview();
                 break;
             case 16:
+
                 System.exit(0);
         }
     }
@@ -168,7 +210,7 @@ public class Database {
             }
         }
         if (g == null) {
-            System.out.println("No such game exists!");
+            System.out.println("No such domain.game exists!");
             return null;
         }
 
@@ -203,7 +245,7 @@ public class Database {
         String nickname = s.nextLine();
         System.out.println("email:");
         String email = s.nextLine();
-        System.out.println("account balance:");
+        System.out.println("domain.account balance:");
         double accBalance = Double.parseDouble(s.nextLine());
 
         System.out.println("Is it a player or a developer? [p/d]");
@@ -214,18 +256,27 @@ public class Database {
             String bio = s.nextLine();
 
             User p = new Player(username, password, nickname, email, accBalance, bio);
+
+//            UserCSV x = UserCSV.getInstance();
+//            x.add("/home/stefan/Desktop/materii_facultate/pao/pao_hw/src/service/User.csv", p);
+
+
             users.add(p);
 
         } else if (line.compareTo("d") == 0) {
             User d = new Developer(username, password, nickname, email, accBalance);
+
+//            UserCSV x = UserCSV.getInstance();
+//            x.add("/home/stefan/Desktop/materii_facultate/pao/pao_hw/src/service/User.csv", d);
+
             users.add(d);
 
         } else System.out.println("Invalid option");
     }
 
     public void addGame() {
-        System.out.println("You have selected adding a game");
-        System.out.println("What is the game called?");
+        System.out.println("You have selected adding a domain.game");
+        System.out.println("What is the domain.game called?");
         String name = s.nextLine();
         System.out.println("How much disk space does it occupy? (in bytes)");
         int bytes = Integer.parseInt(s.nextLine());
@@ -243,7 +294,7 @@ public class Database {
 
     public void addItem() {
         System.out.println("You have selected adding a new item in the database");
-        System.out.println("What game does the item belong to?");
+        System.out.println("What domain.game does the item belong to?");
         String name = s.nextLine();
         Game g = null;
 
@@ -265,7 +316,7 @@ public class Database {
         System.out.println("Short description:");
         String desc = s.nextLine();
 
-        Item t = new Item(g, itemName, type, desc);
+        Item t = new Item(g.getName(), itemName, type, desc);
         items.add(t);
     }
 
@@ -284,7 +335,7 @@ public class Database {
     }
 
     public void listAllItems() {
-        System.out.println("Complete list of the items in our database:");
+        System.out.println("Complete list of the domain.game.items in our database:");
         for (Item item: items) {
             System.out.println(item);
         }
@@ -321,7 +372,7 @@ public class Database {
     }
     
     public void gameReviews() {
-        System.out.println("Which game would you wish to see reviewed? (enter exact name)");
+        System.out.println("Which domain.game would you wish to see reviewed? (enter exact name)");
         Game g = searchGame();
         if (g == null) {
             return;
@@ -338,7 +389,7 @@ public class Database {
             return;
         }
 
-        System.out.println("What game would you like to add? (enter exact name)");
+        System.out.println("What domain.game would you like to add? (enter exact name)");
         Game g = searchGame();
         if (g == null) {
             return;
@@ -354,7 +405,7 @@ public class Database {
             return;
         }
 
-        System.out.println("What game did they work on?");
+        System.out.println("What domain.game did they work on?");
         Game g = searchGame();
 
         if (g == null) {
@@ -365,7 +416,7 @@ public class Database {
 
                 g = games.get(games.size() - 1);
                 d.addDevelopedGame(g);
-                g.addDeveloper(d);
+                g.addDeveloper(d.getUsername());
             } else if (op.compareTo("n") == 0) {
                 return;
             } else {
@@ -374,7 +425,7 @@ public class Database {
         }
         else {
             d.addDevelopedGame(g);
-            g.addDeveloper(d);
+            g.addDeveloper(d.getUsername());
         }
     }
 
@@ -385,7 +436,7 @@ public class Database {
             return;
         }
 
-        System.out.println("What game would you like to add? (enter exact name)");
+        System.out.println("What domain.game would you like to add? (enter exact name)");
         Game g = searchGame();
         if (g == null) {
             return;
@@ -411,21 +462,21 @@ public class Database {
     }
 
     public void addReview() {
-        System.out.println("What player created this review?");
+        System.out.println("What player created this domain.review?");
         Player p = searchPlayer();
 
         if (p == null) {
             return;
         }
 
-        System.out.println("What game is this review for?");
+        System.out.println("What domain.game is this domain.review for?");
         Game g = searchGame();
 
         if (g == null) {
             return;
         }
 
-        System.out.println("What do you rate this game?");
+        System.out.println("What do you rate this domain.game?");
         double rt = Double.parseDouble(s.nextLine());
         System.out.println("How many hours have you played it for?");
         double hrs = Double.parseDouble(s.nextLine());
@@ -437,8 +488,11 @@ public class Database {
         System.out.println("Review text:");
         String rev = s.nextLine();
 
-        Review r = new Review(p, g, rt, hrs, rev, recc);
+        Review r = new Review(p.getUsername(), g.getName(), rt, hrs, rev, recc);
         p.addReview(r);
         g.addReview(r);
+
+        ReviewCSV y = ReviewCSV.getInstance();
+        y.add("/home/stefan/Desktop/materii_facultate/pao/pao_hw/src/service/Review.csv", r);
     }
 }

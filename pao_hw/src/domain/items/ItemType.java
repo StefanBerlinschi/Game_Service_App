@@ -1,4 +1,4 @@
-package items;
+package domain.items;
 
 public enum ItemType {
     CRATE,

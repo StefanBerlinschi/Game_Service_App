@@ -1,7 +1,4 @@
-package account;
-
-import game.Game;
-//import java.util.ArrayList;
+package domain.account;
 
 public class User {
     private String username;
@@ -23,10 +20,17 @@ public class User {
 
     @Override
     public String toString() {
-        return "username = '" + username + '\'' +
-                ", nickname = '" + nickname + '\'' +
-                ", email = '" + email + '\'' +
-                ", accountBalance = " + accountBalance;
+        return  "username: " + username +
+                ", nickname: " + nickname +
+                ", email: " + email +
+                ", accountBalance: " + accountBalance + "$";
+    }
+
+    public String StringCSV() {
+        return  username +
+                ',' + nickname +
+                ',' + email +
+                ',' + accountBalance;
     }
 
     public String getUsername() {

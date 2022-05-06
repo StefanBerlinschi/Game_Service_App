@@ -1,14 +1,14 @@
-package items;
+package domain.items;
 
-import game.Game;
+import domain.game.Game;
 
 public class Item {
-    private Game game;
+    private String game;
     private String name;
     private ItemType type;
     private String description;
 
-    public Item(Game game, String name, ItemType type, String description) {
+    public Item(String game, String name, ItemType type, String description) {
         this.game = game;
         this.name = name;
         this.type = type;
@@ -17,17 +17,24 @@ public class Item {
 
     @Override
     public String toString() {
-        return "game = " + game +
-                ", name = '" + name + '\'' +
-                ", type = " + type +
-                ", description = '" + description + '\'';
+        return "game: " + game +
+                ", name: " + name +
+                ", item type: " + type +
+                ", description: " + description;
     }
 
-    public Game getGame() {
+    public String StringCSV() {
+        return  game +
+                ";;" + name +
+                ";;" + type +
+                ";;" + description;
+    }
+
+    public String getGame() {
         return game;
     }
 
-    public void setGame(Game game) {
+    public void setGame(String game) {
         this.game = game;
     }
 
