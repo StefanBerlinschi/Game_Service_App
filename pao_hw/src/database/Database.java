@@ -16,6 +16,7 @@ import java.util.Scanner;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.Double.parseDouble;
+import static java.lang.Integer.parseInt;
 
 public class Database {
     private Scanner s = new Scanner(System.in);
@@ -23,80 +24,88 @@ public class Database {
     private static ArrayList<Item> items = new ArrayList<>();
 //    private ArrayList<Inventory> inventories = new ArrayList<>();
     private static ArrayList<User> users = new ArrayList<>();
-
     private static ArrayList<Review> rev = new ArrayList<>();
 
-    public static void main(String args[]) {
+    private static GamesDB gamesDB = GamesDB.getInstance();
+
+    public static void main(String[] args) {
         Database database = new Database();
 
-        UserCSV x = UserCSV.getInstance();
-        try {
-            ArrayList<User> ls = x.load("/home/stefan/Desktop/materii_facultate/pao/pao_hw/src/service_files/User.csv");
-            for (User user: ls) {
-                users.add(user);
-            }
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("Users file not found");
-        }
-
-        ReviewCSV y = ReviewCSV.getInstance();
-        try {
-            ArrayList<Review> ls = y.load("/home/stefan/Desktop/materii_facultate/pao/pao_hw/src/service_files/Review.csv");
-            for (Review review: ls) {
-                rev.add(review);
-            }
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("Review file not found");
-        }
-
-        System.out.println(rev);
-
-        String player = database.s.nextLine();
-        String game = database.s.nextLine();
-        Double rating = parseDouble(database.s.nextLine());
-        Double hrs = parseDouble(database.s.nextLine());
-        String revtext = database.s.nextLine();
-        Boolean recc = parseBoolean(database.s.nextLine());
-
-        Review r = new Review(player, game, rating, hrs, revtext, recc);
-        y.add("/home/stefan/Desktop/materii_facultate/pao/pao_hw/src/service_files/Review.csv", r);
-
-
-//        while (true) {
-//            database.menu();
-//            int option = database.readOption();
-//            database.apply(option);
+//        UserCSV x = UserCSV.getInstance();
+//        try {
+//            ArrayList<User> ls = x.load("/home/stefan/Desktop/materii_facultate/pao/pao_hw/src/service_files/User.csv");
+//            for (User user: ls) {
+//                users.add(user);
+//            }
 //        }
+//        catch (FileNotFoundException e) {
+//            System.out.println("Users file not found");
+//        }
+//
+//        ReviewCSV y = ReviewCSV.getInstance();
+//        try {
+//            ArrayList<Review> ls = y.load("/home/stefan/Desktop/materii_facultate/pao/pao_hw/src/service_files/Review.csv");
+//            for (Review review: ls) {
+//                rev.add(review);
+//            }
+//        }
+//        catch (FileNotFoundException e) {
+//            System.out.println("Review file not found");
+//        }
+//
+//        System.out.println(rev);
+//
+//        String player = database.s.nextLine();
+//        String game = database.s.nextLine();
+//        Double rating = parseDouble(database.s.nextLine());
+//        Double hrs = parseDouble(database.s.nextLine());
+//        String revtext = database.s.nextLine();
+//        Boolean recc = parseBoolean(database.s.nextLine());
+//
+//        Review r = new Review(player, game, rating, hrs, revtext, recc);
+//        y.add("/home/stefan/Desktop/materii_facultate/pao/pao_hw/src/service_files/Review.csv", r);
+
+//        GamesDB loader = new GamesDB();
+        ArrayList<Game> g = gamesDB.read();
+        for (Game game: g) {
+            games.add(game);
+        }
+
+        while (true) {
+            database.menu();
+            int option = database.readOption();
+            database.apply(option);
+        }
     }
 
     private void menu() {
         System.out.println("---------------------------");
         System.out.println("Game service app");
         System.out.println("1. Add user");
-        System.out.println("2. Add domain.game");
+        System.out.println("2. Add game");
         System.out.println("3. Add item");
         System.out.println("4. List all users");
         System.out.println("5. List all games");
-        System.out.println("6. List all domain.game.items");
+        System.out.println("6. List all items");
         System.out.println("7. Display user's library");
         System.out.println("8. Display user's wishlist");
         System.out.println("9. Display user's reviews");
-        System.out.println("10. List all reviews for a domain.game");
+        System.out.println("10. List all reviews for a game");
         System.out.println("11. Update user wishlist");
-        System.out.println("12. Add dev as contributor to domain.game");
-        System.out.println("13. Add domain.game to player's library");
+        System.out.println("12. Add dev as contributor to game");
+        System.out.println("13. Add game to player's library");
         System.out.println("14. Add item to player's inventory");
-        System.out.println("15. Add domain.review");
-        System.out.println("16. Exit");
+        System.out.println("15. Add review");
+        System.out.println("16. Delete game");
+        System.out.println("17. Update game");
+        System.out.println("18. Exit");
         System.out.print("Option:");
     }
 
     private int readOption(){
         String line = s.nextLine();
-        int option = Integer.parseInt(line);
-        if (option >= 1 && option <= 16)
+        int option = parseInt(line);
+        if (option >= 1 && option <= 18)
             return option;
 
         System.out.println("Invalid option. Try again");
@@ -116,12 +125,15 @@ public class Database {
                 break;
             case 4:
                 listAllUsers();
+                returnToMenu();
                 break;
             case 5:
                 listAllGames();
+                returnToMenu();
                 break;
             case 6:
                 listAllItems();
+                returnToMenu();
                 break;
             case 7:
                 displayLibrary();
@@ -151,11 +163,20 @@ public class Database {
                 addReview();
                 break;
             case 16:
-
+                deleteGame();
+                break;
+            case 17:
+                updateGame();
+                break;
+            case 18:
                 System.exit(0);
         }
     }
 
+    public void returnToMenu() {
+        System.out.println("(press enter to return to menu)");
+        s.nextLine();
+    }
 
     public Player searchPlayer() {
         String username = s.nextLine();
@@ -274,22 +295,40 @@ public class Database {
         } else System.out.println("Invalid option");
     }
 
+    // done
     public void addGame() {
-        System.out.println("You have selected adding a domain.game");
-        System.out.println("What is the domain.game called?");
+        System.out.println("You have selected adding a game");
+        System.out.println("What is the game called?");
         String name = s.nextLine();
-        System.out.println("How much disk space does it occupy? (in bytes)");
-        int bytes = Integer.parseInt(s.nextLine());
-        System.out.println("What rating would you give it? (out of 10)");
-        double rating = Double.parseDouble(s.nextLine());
 
-        if (rating < 0.0 || rating > 10.0) {
-            System.out.println("Invalid rating");
-            return;
+        for (Game game: games) {
+            if (game.getName().equals(name)) {
+                System.out.println("Game already exists!");
+                returnToMenu();
+                return;
+            }
         }
 
-        Game g = new Game(name, bytes, rating);
-        games.add(g);
+        try {
+            System.out.println("How much disk space does it occupy? (in bytes)");
+            int bytes = parseInt(s.nextLine());
+            System.out.println("What rating would you give it? (out of 10)");
+            double rating = Double.parseDouble(s.nextLine());
+
+            if (rating < 0.0 || rating > 10.0) {
+                System.out.println("You have entered an invalid rating!");
+                returnToMenu();
+                return;
+            }
+
+            Game g = new Game(name, bytes, rating);
+            games.add(g);
+            gamesDB.create(g);
+        }
+        catch (Exception e) {
+            System.out.println("You have entered an invalid rating or storage size!");
+            returnToMenu();
+        }
     }
 
     public void addItem() {
@@ -490,9 +529,64 @@ public class Database {
 
         Review r = new Review(p.getUsername(), g.getName(), rt, hrs, rev, recc);
         p.addReview(r);
-        g.addReview(r);
+//        g.addReview(r);
 
         ReviewCSV y = ReviewCSV.getInstance();
         y.add("/home/stefan/Desktop/materii_facultate/pao/pao_hw/src/service/Review.csv", r);
     }
+
+    // done
+    public void deleteGame() {
+        System.out.println("Game name: ");
+        String name = s.nextLine();
+
+        for (Game game: games) {
+            if (game.getName().equals(name)) {
+                games.remove(game);
+                gamesDB.delete(name);
+                System.out.println("Delete successful!");
+                returnToMenu();
+                return;
+            }
+        }
+
+        System.out.println("Game doesn't exist!");
+        returnToMenu();
+    }
+
+    // done
+    public void updateGame() {
+        listAllGames();
+        System.out.println("\nWhich game would you like to update? (enter the name)");
+        String name = s.nextLine();
+
+        for (Game game: games) {
+            if (game.getName().equals(name)) {
+                System.out.println("Enter a new rating or keep the same one:");
+                try {
+                    String rat = s.nextLine();
+                    double rating = parseDouble(rat);
+                    System.out.println("Enter a new storage size:");
+                    String sz = s.nextLine();
+                    int size = parseInt(sz);
+
+                    game.setRating(rating);
+                    game.setStorage_size(size);
+
+                    gamesDB.update(game);
+                    System.out.println("Update successful!");
+                }
+                catch (Exception e) {
+                    System.out.println("You have entered and invalid rating or storage size!");
+                    returnToMenu();
+                }
+                return;
+            }
+        }
+
+        System.out.println("The game does not exist!");
+        returnToMenu();
+    }
+
 }
+

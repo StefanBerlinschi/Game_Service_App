@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Game {
     private String name;
     private ArrayList<String> dev = new ArrayList<>();  // developer usernames
-    private int storage_size;   // in bytes
+    private int storage_size;   // in megabytes
     private double rating;      // out of 5
     private ArrayList<Pair<String, Double>> reviews = new ArrayList<>();  // player usernames and ratings
 
@@ -85,5 +85,25 @@ public class Game {
 
     public ArrayList<Pair<String, Double>> getReviews() {
         return reviews;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDev(ArrayList<String> dev) {
+        this.dev = dev;
+    }
+
+    public void setStorage_size(int storage_size) {
+        this.storage_size = storage_size;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public void setReviews(ArrayList<Pair<String, Double>> reviews) {
+        this.reviews = reviews;
     }
 }
